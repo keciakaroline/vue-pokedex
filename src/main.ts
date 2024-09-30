@@ -12,7 +12,7 @@ const routes = [
     component: Pokedex,
   },
   {
-    path: "/pokemon/:id",
+    path: "/pokemon/:name",
     name: "PokemonDetails",
     component: PokemonDetails,
     props: true,
