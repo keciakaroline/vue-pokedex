@@ -16,7 +16,7 @@ const formattedId = computed(() => formatId(props.id));
 <template>
   <li class="pokemonCard">
     <router-link
-      :to="`/pokemons/${name}`"
+      :to="`/pokemon/${name}`"
       class="pokemonCard"
     >
       <div class="pokemonCard_id">{{ formattedId }}</div>
