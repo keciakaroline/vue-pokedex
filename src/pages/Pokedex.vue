@@ -83,7 +83,7 @@ onMounted(() => {
         v-if="!isLoading && !isError"
       >
         <PokemonCard
-          v-for="pokemon in filter.length ? filter : pokemons"
+          v-for="pokemon in filter.length !== 0 ? filter : pokemons"
           :key="pokemon.id"
           :name="pokemon.name"
           :id="pokemon.id"
