@@ -116,5 +116,5 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@import "@/pages/Pokedex.css";
+@import "Pokedex.css";
 </style>
