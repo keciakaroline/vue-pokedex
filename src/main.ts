@@ -5,6 +5,8 @@ import Pokedex from "@/pages/Pokedex.vue";
 import PokemonDetails from "@/pages/PokemonDetails.vue";
 import { createPinia } from "pinia";
 
+import "./style.css";
+
 const routes = [
   {
     path: "/",

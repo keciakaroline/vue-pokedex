@@ -6,6 +6,4 @@
   </div>
 </template>
 
-<style scoped>
-/* @import "style.css"; */
-</style>
+<style scoped></style>
