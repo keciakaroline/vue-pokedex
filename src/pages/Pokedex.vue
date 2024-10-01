@@ -26,8 +26,8 @@ const handleSearch = () => {
 
 const setSearchMode = pokedexStore.setSearchMode;
 const setSearch = (event: Event) => {
-  const target = event.target as HTMLInputElement;
-  if (target) {
+  const target = event.target as HTMLInputElement | null;
+  if (target && target.value) {
     pokedexStore.setSearch(target.value);
   }
 };
@@ -77,7 +77,7 @@ onMounted(() => {
             aria-label="Search"
             class="searchInput"
             v-model="search"
-            @input="setSearch($event.target.value)"
+            @input="setSearch"
             @keydown.enter="handleSearch"
           />
         </div>
