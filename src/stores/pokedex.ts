@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { getPokemons, getPokemonByName } from "@/services/pokemonApiService";
 import { INITIAL_PAGE } from "@/shared/helpers";
 import type { PokedexState } from "@/services/types";
+import { useRouter } from "vue-router";
 
 export const usePokedexStore = defineStore("pokedex", {
   state: (): PokedexState => ({
@@ -13,6 +14,8 @@ export const usePokedexStore = defineStore("pokedex", {
     isLoading: false,
     isError: false,
     error: null,
+    isSearching: false,
+    searchResults: [],
   }),
 
   actions: {
@@ -52,20 +55,54 @@ export const usePokedexStore = defineStore("pokedex", {
       }
     },
 
-    handleSearch() {
-      if (this.searchMode === "id") {
-        this.filter = this.pokemons.filter((pokemon) =>
-          pokemon.id.toString().includes(this.search)
-        );
-      } else if (this.searchMode === "name") {
-        this.filter = this.pokemons.filter((pokemon) =>
-          pokemon.name.toLowerCase().includes(this.search.toLowerCase())
-        );
+    async handleSearch() {
+      const trimmedSearch = this.search.trim();
+      if (!trimmedSearch) {
+        this.redirectToHome();
+        return;
+      }
+
+      this.isSearching = true;
+      this.isError = false;
+      this.error = null;
+
+      try {
+        if (this.searchMode === "id") {
+          const { data } = await getPokemonByName(this.search);
+          this.searchResults = [data];
+        } else if (this.searchMode === "name") {
+          const { data } = await getPokemonByName(this.search.toLowerCase());
+          this.searchResults = [data];
+        }
+      } catch (error: any) {
+        this.isError = true;
+        this.error = error.message || "Erro ao buscar o Pokémon.";
+        this.searchResults = [];
+      } finally {
+        this.isSearching = false;
       }
     },
 
     setSearchMode() {
       this.searchMode = this.searchMode === "name" ? "id" : "name";
+    },
+
+    setSearch(value: string) {
+      this.search = value;
+    },
+
+    redirectToHome() {
+      const router = useRouter();
+      this.resetSearchAndReload();
+      router.push("/");
+    },
+
+    resetSearchAndReload() {
+      this.search = "";
+      this.filter = [];
+      this.searchResults = [];
+      this.currentPage = INITIAL_PAGE;
+      this.fetchPokemons();
     },
   },
 });
