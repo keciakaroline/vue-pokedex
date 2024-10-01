@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
+import { useRoute } from "vue-router";
 import { usePokemonStore } from "@/stores/pokemon";
 import PokemonAboutDetails from "@/components/PokemonAboutDetails.vue";
 import PokemonStats from "@/components/PokemonStats.vue";
 import backArrow from "@/assets/icons/back_arrow.svg";
 import arrowLeft from "@/assets/icons/arrow_left.svg";
 import arrowRight from "@/assets/icons/arrow_right.svg";
-import { pokemonType } from "@/shared/helpers/index.ts";
+import divider from "@/assets/icons/divider.svg";
+import { pokemonType, cleanFlavorText } from "@/shared/helpers/index.ts";
 
 const route = useRoute();
-const router = useRouter();
 const { name } = route.params as { name: string };
 
 const pokemonStore = usePokemonStore();
@@ -28,6 +28,21 @@ const error = computed(() => pokemonStore.error);
 const isLoadingSpecie = computed(() => pokemonStore.isLoadingSpecie);
 const isErrorSpecie = computed(() => pokemonStore.isErrorSpecie);
 const errorSpecie = computed(() => pokemonStore.errorSpecie);
+
+const handlePreviousPokemon = () => {
+  pokemonStore.navigateToPreviousPokemon();
+};
+
+const handleNextPokemon = () => {
+  pokemonStore.navigateToNextPokemon();
+};
+
+const flavorText = computed(() => {
+  const entry = pokemonSpecie.value?.flavor_text_entries?.find(
+    (entry) => entry.language.name === "en"
+  );
+  return cleanFlavorText(entry?.flavor_text ?? null);
+});
 </script>
 
 <template>
@@ -36,8 +51,10 @@ const errorSpecie = computed(() => pokemonStore.errorSpecie);
   <div v-if="isErrorSpecie">{{ errorSpecie }}</div>
 
   <div
-    v-if="pokemon"
-    :class="`pokemonDetails_main pokemon-type--${pokemonType(pokemon?.types)}`"
+    v-else
+    :class="`pokemonDetails_main pokemon-type--${pokemonType(
+      pokemon?.types ?? null
+    )}`"
   >
     <header class="pokemonDetails_header">
       <router-link :to="`/`">
@@ -47,9 +64,9 @@ const errorSpecie = computed(() => pokemonStore.errorSpecie);
           alt="Back to Pokedex"
         />
       </router-link>
-      <h1 class="pokemonDetails_pokemonName">{{ pokemon.name }}</h1>
+      <h1 class="pokemonDetails_pokemonName">{{ pokemon?.name }}</h1>
       <p class="pokemonDetails_id">
-        #{{ pokemon.id.toString().padStart(3, "0") }}
+        #{{ pokemon?.id.toString().padStart(3, "0") }}
       </p>
     </header>
 
@@ -67,8 +84,8 @@ const errorSpecie = computed(() => pokemonStore.errorSpecie);
         </button>
         <img
           class="pokemon_about_img"
-          :src="pokemon.sprites?.other['official-artwork']?.front_default"
-          :alt="pokemon.name"
+          :src="pokemon?.sprites?.other['official-artwork']?.front_default"
+          :alt="pokemon?.name"
         />
         <button
           @click="handleNextPokemon"
@@ -84,20 +101,79 @@ const errorSpecie = computed(() => pokemonStore.errorSpecie);
     </div>
 
     <section class="section_about">
-      <PokemonAboutDetails
-        :name="pokemon.name"
-        :weight="pokemon.weight"
-        :height="pokemon.height"
-        :abilities="pokemon.abilities"
-      />
-      <PokemonStats
-        :stats="pokemon.stats"
-        :types="pokemon.types"
-      />
+      <div class="pokemonDetails_pokemonType">
+        <span
+          v-for="type in pokemon?.types"
+          :key="pokemon?.id"
+          :class="`pokemonDetails_pokemonType--${type.type.name}`"
+        >
+          {{ type.type.name }}
+        </span>
+      </div>
+
+      <div>
+        <h2
+          :class="`title_pokemonDetails_pokemon-type--${pokemonType(
+            pokemon?.types ?? null
+          )}`"
+        >
+          About
+        </h2>
+        <PokemonAboutDetails
+          :name="pokemon?.name ?? ''"
+          :weight="pokemon?.weight ?? 0"
+          :height="pokemon?.height ?? 0"
+          :abilities="pokemon?.abilities ?? []"
+        />
+      </div>
+
+      <div class="pokemonDetails_flavorText">
+        <p>{{ flavorText }}</p>
+      </div>
+
+      <div class="pokemonDetails_stats">
+        <h2
+          :class="`title_pokemonDetails_pokemon-type--${pokemonType(
+            pokemon?.types ?? null
+          )}`"
+        >
+          Base Stats
+        </h2>
+        <div class="pokemonDetails_stats_table">
+          <div>
+            <div
+              v-for="stat in pokemon?.stats"
+              :key="pokemon?.id"
+              class="pokemonDetails_stats_name"
+            >
+              <span
+                :class="`statsName stat_pokemonDetails_pokemon-type--${pokemonType(
+                  pokemon?.types ?? null
+                )}`"
+              >
+                {{ stat.stat.name }}
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <img
+              class="longDivider"
+              :src="divider"
+              alt="divider"
+            />
+          </div>
+
+          <PokemonStats
+            :stats="pokemon?.stats ?? []"
+            :types="pokemon?.types ?? []"
+          />
+        </div>
+      </div>
     </section>
   </div>
 </template>
 
 <style scoped>
-@import "@/pages/PokemonDetails.css";
+@import "PokemonDetails.css";
 </style>
