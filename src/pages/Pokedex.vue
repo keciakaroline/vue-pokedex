@@ -18,11 +18,19 @@ const filter = computed(() => pokedexStore.filter);
 const isLoading = computed(() => pokedexStore.isLoading);
 const isError = computed(() => pokedexStore.isError);
 const error = computed(() => pokedexStore.error);
+const searchResults = computed(() => pokedexStore.searchResults);
 
-const handleSearch = pokedexStore.handleSearch;
+const handleSearch = () => {
+  pokedexStore.handleSearch();
+};
+
 const setSearchMode = pokedexStore.setSearchMode;
+const setSearch = (value: string) => {
+  pokedexStore.setSearch(value);
+};
 const handleNextPage = pokedexStore.handleNextPage;
 const handlePreviousPage = pokedexStore.handlePreviousPage;
+const redirectToHome = pokedexStore.redirectToHome;
 
 onMounted(() => {
   pokedexStore.fetchPokemons();
@@ -38,7 +46,14 @@ onMounted(() => {
           alt="Pokeball"
           class="pokeballImg"
         />
-        <h1 class="header_pokedex_title">Pokédex</h1>
+
+        <router-link
+          to="/"
+          class="header_pokedex_title"
+          @click="redirectToHome"
+        >
+          Pokédex
+        </router-link>
       </div>
       <div class="header_title header_searchBar">
         <div class="inputContainer">
@@ -58,6 +73,7 @@ onMounted(() => {
             aria-label="Search"
             class="searchInput"
             v-model="search"
+            @input="setSearch($event.target.value)"
             @keydown.enter="handleSearch"
           />
         </div>
@@ -80,7 +96,20 @@ onMounted(() => {
 
       <ul
         class="grid_pokedex"
-        v-if="!isLoading && !isError"
+        v-if="!isLoading && !isError && searchResults.length > 0"
+      >
+        <PokemonCard
+          v-for="pokemon in searchResults"
+          :key="pokemon.id"
+          :name="pokemon.name"
+          :id="pokemon.id"
+          :sprites="pokemon.sprites?.other['official-artwork']?.front_default"
+        />
+      </ul>
+
+      <ul
+        class="grid_pokedex"
+        v-if="!isLoading && !isError && searchResults.length === 0"
       >
         <PokemonCard
           v-for="pokemon in filter.length !== 0 ? filter : pokemons"
