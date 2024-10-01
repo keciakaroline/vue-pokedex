@@ -36,11 +36,8 @@ interface PokemonState {
 
 interface PokedexState {
   search: string;
-  searchMode: "name" | "id";
   currentPage: number;
-  filter: Pokemon[];
   pokemons: Pokemon[];
-  isSearching: boolean;
   isLoading: boolean;
   isError: boolean;
   error: string | null;
