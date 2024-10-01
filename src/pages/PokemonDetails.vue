@@ -177,8 +177,8 @@ const flavorText = computed(() => {
           </div>
 
           <PokemonStats
-            :stats="pokemon?.stats"
-            :types="pokemon?.types"
+            :stats="pokemon?.stats ?? []"
+            :types="pokemon?.types ?? []"
           />
         </div>
       </div>
