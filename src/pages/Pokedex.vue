@@ -25,9 +25,13 @@ const handleSearch = () => {
 };
 
 const setSearchMode = pokedexStore.setSearchMode;
-const setSearch = (value: string) => {
-  pokedexStore.setSearch(value);
+const setSearch = (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (target) {
+    pokedexStore.setSearch(target.value);
+  }
 };
+
 const handleNextPage = pokedexStore.handleNextPage;
 const handlePreviousPage = pokedexStore.handlePreviousPage;
 const redirectToHome = pokedexStore.redirectToHome;
