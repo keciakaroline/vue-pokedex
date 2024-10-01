@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { computed, onMounted, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import { usePokemonStore } from "@/stores/pokemon";
 import PokemonAboutDetails from "@/components/PokemonAboutDetails.vue";
 import PokemonStats from "@/components/PokemonStats.vue";
@@ -11,14 +11,26 @@ import divider from "@/assets/icons/divider.svg";
 import { pokemonType, cleanFlavorText } from "@/shared/helpers/index.ts";
 
 const route = useRoute();
+const router = useRouter();
 const { name } = route.params as { name: string };
 
 const pokemonStore = usePokemonStore();
 
+const loadPokemon = (pokemonName: string) => {
+  pokemonStore.fetchPokemonByName(pokemonName);
+  pokemonStore.fetchPokemonSpecies(pokemonName);
+};
+
 onMounted(() => {
-  pokemonStore.fetchPokemonByName(name);
-  pokemonStore.fetchPokemonSpecies(name);
+  loadPokemon(name);
 });
+
+watch(
+  () => route.params.name,
+  (newPokemonName) => {
+    loadPokemon(newPokemonName as string);
+  }
+);
 
 const pokemon = computed(() => pokemonStore.pokemon);
 const pokemonSpecie = computed(() => pokemonStore.pokemonSpecie);
@@ -30,11 +42,11 @@ const isErrorSpecie = computed(() => pokemonStore.isErrorSpecie);
 const errorSpecie = computed(() => pokemonStore.errorSpecie);
 
 const handlePreviousPokemon = () => {
-  pokemonStore.navigateToPreviousPokemon();
+  pokemonStore.navigateToPreviousPokemon(router);
 };
 
 const handleNextPokemon = () => {
-  pokemonStore.navigateToNextPokemon();
+  pokemonStore.navigateToNextPokemon(router);
 };
 
 const flavorText = computed(() => {
@@ -104,7 +116,7 @@ const flavorText = computed(() => {
       <div class="pokemonDetails_pokemonType">
         <span
           v-for="type in pokemon?.types"
-          :key="pokemon?.id"
+          :key="type.type.name"
           :class="`pokemonDetails_pokemonType--${type.type.name}`"
         >
           {{ type.type.name }}
@@ -143,7 +155,7 @@ const flavorText = computed(() => {
           <div>
             <div
               v-for="stat in pokemon?.stats"
-              :key="pokemon?.id"
+              :key="stat.stat.name"
               class="pokemonDetails_stats_name"
             >
               <span
@@ -165,8 +177,8 @@ const flavorText = computed(() => {
           </div>
 
           <PokemonStats
-            :stats="pokemon?.stats ?? []"
-            :types="pokemon?.types ?? []"
+            :stats="pokemon?.stats"
+            :types="pokemon?.types"
           />
         </div>
       </div>

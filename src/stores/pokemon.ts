@@ -52,16 +52,14 @@ export const usePokemonStore = defineStore("pokemon", {
       }
     },
 
-    navigateToPreviousPokemon() {
-      const router = useRouter();
+    navigateToPreviousPokemon(router: any) {
       if (this.pokemon && this.pokemon.id > 1) {
         const previousPokemonId = this.pokemon.id - 1;
         router.push(`/pokemon/${previousPokemonId}`);
       }
     },
 
-    navigateToNextPokemon() {
-      const router = useRouter();
+    navigateToNextPokemon(router: any) {
       if (this.pokemon) {
         const nextPokemonId = this.pokemon.id + 1;
         router.push(`/pokemon/${nextPokemonId}`);
