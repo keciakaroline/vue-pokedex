@@ -4,6 +4,7 @@ import {
   getPokemonSpecies,
 } from "@/services/pokemonApiService";
 import { PokemonState } from "@/services/types";
+import { useRouter } from "vue-router";
 
 export const usePokemonStore = defineStore("pokemon", {
   state: (): PokemonState => ({
@@ -48,6 +49,22 @@ export const usePokemonStore = defineStore("pokemon", {
           error.message || "Erro ao buscar a espécie do Pokémon.";
       } finally {
         this.isLoadingSpecie = false;
+      }
+    },
+
+    navigateToPreviousPokemon() {
+      const router = useRouter();
+      if (this.pokemon && this.pokemon.id > 1) {
+        const previousPokemonId = this.pokemon.id - 1;
+        router.push(`/pokemon/${previousPokemonId}`);
+      }
+    },
+
+    navigateToNextPokemon() {
+      const router = useRouter();
+      if (this.pokemon) {
+        const nextPokemonId = this.pokemon.id + 1;
+        router.push(`/pokemon/${nextPokemonId}`);
       }
     },
   },
