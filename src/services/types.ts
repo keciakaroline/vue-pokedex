@@ -40,9 +40,11 @@ interface PokedexState {
   currentPage: number;
   filter: Pokemon[];
   pokemons: Pokemon[];
+  isSearching: boolean;
   isLoading: boolean;
   isError: boolean;
   error: string | null;
+  searchResults: Pokemon[];
 }
 
 export type {
