@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { getPokemons, getPokemonByName } from "@/services/pokemonApiService";
 import { INITIAL_PAGE } from "@/shared/helpers";
+import { LIMIT } from "@/shared/helpers/index";
 import type { PokedexState } from "@/services/types";
 
 export const usePokedexStore = defineStore("pokedex", {
@@ -12,7 +13,9 @@ export const usePokedexStore = defineStore("pokedex", {
     isError: false,
     error: null,
     searchResults: [],
-    selectedTypes: [] as string[],
+    selectedTypes: [],
+    typeFilterError: "",
+    totalPages: 0,
   }),
 
   actions: {
@@ -22,7 +25,9 @@ export const usePokedexStore = defineStore("pokedex", {
       this.error = null;
 
       try {
-        const basicPokemonList = await getPokemons(this.currentPage);
+        const response = await getPokemons(this.currentPage);
+
+        const basicPokemonList = response.results;
 
         const pokemonDetails = await Promise.all(
           basicPokemonList.map(async (pokemon) => {
@@ -32,6 +37,7 @@ export const usePokedexStore = defineStore("pokedex", {
         );
 
         this.pokemons = pokemonDetails;
+        this.totalPages = Math.ceil(response.count / LIMIT);
       } catch (error: any) {
         this.isError = true;
         this.error = error.message || "Erro ao buscar Pokémons.";
@@ -41,8 +47,10 @@ export const usePokedexStore = defineStore("pokedex", {
     },
 
     handleNextPage() {
-      this.currentPage++;
-      this.fetchPokemons();
+      if (this.currentPage < this.totalPages) {
+        this.currentPage++;
+        this.fetchPokemons();
+      }
     },
 
     handlePreviousPage() {
@@ -83,21 +91,31 @@ export const usePokedexStore = defineStore("pokedex", {
       }
     },
 
-    filterByType() {
+    filterByTypes() {
       if (this.selectedTypes.length === 0) {
         this.searchResults = this.pokemons;
+        this.typeFilterError = "";
       } else {
-        this.searchResults = this.pokemons.filter((pokemon) =>
+        const filtered = this.pokemons.filter((pokemon) =>
           pokemon.types.some((type) =>
             this.selectedTypes.includes(type.type.name)
           )
         );
+
+        if (filtered.length === 0) {
+          this.searchResults = [];
+          this.typeFilterError =
+            "Nenhum Pokémon encontrado com os tipos selecionados.";
+        } else {
+          this.searchResults = filtered;
+          this.typeFilterError = "";
+        }
       }
     },
 
     setSelectedTypes(types: string[]) {
       this.selectedTypes = types;
-      this.filterByType();
+      this.filterByTypes();
     },
 
     setSearch(value: string) {
@@ -106,9 +124,17 @@ export const usePokedexStore = defineStore("pokedex", {
 
     resetSearchAndReload() {
       this.search = "";
+      this.selectedTypes = [];
       this.searchResults = [];
+      this.typeFilterError = "";
       this.currentPage = INITIAL_PAGE;
       this.fetchPokemons();
+    },
+  },
+
+  getters: {
+    canGoNext(state) {
+      return state.currentPage < state.totalPages;
     },
   },
 });

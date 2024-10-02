@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, onMounted } from "vue";
 import { usePokedexStore } from "@/stores/pokedex";
 import pokeballImg from "@/assets/icons/pokeball.svg";
 import searchImg from "@/assets/icons/search.svg";
 import arrowBackBold from "@/assets/icons/arrow_back_bold.svg";
 import arrowForwardBold from "@/assets/icons/arrow_forward_bold.svg";
 import PokemonCard from "../components/PokemonCard.vue";
+import { useRouter } from "vue-router";
 
 const types = [
   "fire",
@@ -29,30 +30,24 @@ const types = [
 ];
 
 const pokedexStore = usePokedexStore();
+const router = useRouter();
 
-const selectedTypes = ref<string[]>([]);
 const search = computed(() => pokedexStore.search);
 const pokemons = computed(() => pokedexStore.pokemons);
+const currentPage = computed(() => pokedexStore.currentPage);
 const isLoading = computed(() => pokedexStore.isLoading);
 const isError = computed(() => pokedexStore.isError);
 const searchResults = computed(() => pokedexStore.searchResults);
-
-const updateTypeFilter = (event: Event) => {
-  const target = event.target as HTMLInputElement | null;
-  if (target && target.value) {
-    if (target.checked) {
-      selectedTypes.value.push(target.value);
-    } else {
-      selectedTypes.value = selectedTypes.value.filter(
-        (type) => type !== target.value
-      );
-    }
-    pokedexStore.setSelectedTypes(selectedTypes.value);
-  }
-};
+const typeFilterError = computed(() => pokedexStore.typeFilterError);
+const totalPages = computed(() => pokedexStore.totalPages);
 
 const handleSearch = () => {
   pokedexStore.handleSearch();
+};
+
+const redirectToHome = () => {
+  pokedexStore.resetSearchAndReload();
+  router.push("/");
 };
 
 const setSearch = (event: Event) => {
@@ -63,8 +58,25 @@ const setSearch = (event: Event) => {
   }
 };
 
-const handleNextPage = pokedexStore.handleNextPage;
-const handlePreviousPage = pokedexStore.handlePreviousPage;
+const handleTypeChange = () => {
+  const selectedTypes = Array.from(
+    document.querySelectorAll('input[type="checkbox"]:checked')
+  ).map((input) => (input as HTMLInputElement).value);
+
+  pokedexStore.setSelectedTypes(selectedTypes);
+};
+
+const handleNextPage = () => {
+  if (currentPage.value < totalPages.value) {
+    pokedexStore.handleNextPage();
+  }
+};
+
+const handlePreviousPage = () => {
+  if (currentPage.value > 1) {
+    pokedexStore.handlePreviousPage();
+  }
+};
 
 onMounted(() => {
   pokedexStore.fetchPokemons();
@@ -83,7 +95,7 @@ onMounted(() => {
         <router-link
           to="/"
           class="header_pokedex_title"
-          @click="pokedexStore.resetSearchAndReload"
+          @click="redirectToHome"
         >
           Pokédex
         </router-link>
@@ -125,7 +137,7 @@ onMounted(() => {
             <input
               type="checkbox"
               :value="type"
-              @change="updateTypeFilter"
+              @change="handleTypeChange"
             />
             {{ type }}
           </label>
@@ -136,10 +148,13 @@ onMounted(() => {
     <section class="section_pokedex">
       <div v-if="isLoading">Loading...</div>
       <div v-if="isError">An error has occurred: Pokémon not found</div>
+      <div v-if="typeFilterError">{{ typeFilterError }}</div>
 
       <ul
         class="grid_pokedex"
-        v-if="!isLoading && !isError && searchResults.length > 0"
+        v-if="
+          !isLoading && !isError && searchResults.length > 0 && !typeFilterError
+        "
       >
         <PokemonCard
           v-for="pokemon in searchResults"
@@ -152,7 +167,12 @@ onMounted(() => {
 
       <ul
         class="grid_pokedex"
-        v-if="!isLoading && !isError && searchResults.length === 0"
+        v-if="
+          !isLoading &&
+          !isError &&
+          searchResults.length === 0 &&
+          !typeFilterError
+        "
       >
         <PokemonCard
           v-for="pokemon in pokemons"
@@ -167,6 +187,7 @@ onMounted(() => {
         <button
           class="btn_pagination_left"
           @click="handlePreviousPage"
+          :disabled="currentPage === 1"
         >
           <img
             :src="arrowBackBold"
@@ -176,6 +197,7 @@ onMounted(() => {
         <button
           class="btn_pagination_right"
           @click="handleNextPage"
+          :disabled="currentPage >= totalPages"
         >
           <img
             :src="arrowForwardBold"
