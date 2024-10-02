@@ -2,10 +2,8 @@
   background-color: #dc0a2d;
   display: flex;
   flex-direction: column;
-  padding: 0.75rem 0.75rem 1.5rem 0.75rem;
+  padding: 0.75rem 0.75rem 0.5rem 0.75rem;
   gap: 0.5rem;
-
-  height: 6.75rem;
 }
 
 .header_title,
@@ -150,11 +148,22 @@ input.searchInput:focus {
   cursor: pointer;
 }
 
-@media screen and (min-width: 1024px) {
-  .header_pokedex {
-    height: 8.5rem;
-  }
+.filter_section {
+  margin: 5px 20px;
+  color: white;
+}
 
+.types_filters {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.filter_option {
+  margin-right: 10px;
+  padding-bottom: 10px;
+}
+
+@media screen and (min-width: 1024px) {
   .header_pokedex_title {
     font-size: 2.5rem;
     line-height: 3rem;

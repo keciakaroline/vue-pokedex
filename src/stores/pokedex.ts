@@ -12,6 +12,7 @@ export const usePokedexStore = defineStore("pokedex", {
     isError: false,
     error: null,
     searchResults: [],
+    selectedTypes: [] as string[],
   }),
 
   actions: {
@@ -80,6 +81,23 @@ export const usePokedexStore = defineStore("pokedex", {
       } finally {
         this.isLoading = false;
       }
+    },
+
+    filterByType() {
+      if (this.selectedTypes.length === 0) {
+        this.searchResults = this.pokemons;
+      } else {
+        this.searchResults = this.pokemons.filter((pokemon) =>
+          pokemon.types.some((type) =>
+            this.selectedTypes.includes(type.type.name)
+          )
+        );
+      }
+    },
+
+    setSelectedTypes(types: string[]) {
+      this.selectedTypes = types;
+      this.filterByType();
     },
 
     setSearch(value: string) {

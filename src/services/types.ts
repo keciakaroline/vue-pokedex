@@ -42,6 +42,7 @@ interface PokedexState {
   isError: boolean;
   error: string | null;
   searchResults: Pokemon[];
+  selectedTypes: string[];
 }
 
 export type {

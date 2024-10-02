@@ -1,29 +1,58 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { usePokedexStore } from "@/stores/pokedex";
 import pokeballImg from "@/assets/icons/pokeball.svg";
 import searchImg from "@/assets/icons/search.svg";
 import arrowBackBold from "@/assets/icons/arrow_back_bold.svg";
 import arrowForwardBold from "@/assets/icons/arrow_forward_bold.svg";
 import PokemonCard from "../components/PokemonCard.vue";
-import { useRouter } from "vue-router";
+
+const types = [
+  "fire",
+  "water",
+  "grass",
+  "electric",
+  "rock",
+  "ground",
+  "psychic",
+  "ice",
+  "dragon",
+  "dark",
+  "fairy",
+  "bug",
+  "poison",
+  "normal",
+  "flying",
+  "fighting",
+  "steel",
+  "ghost",
+];
 
 const pokedexStore = usePokedexStore();
-const router = useRouter();
 
+const selectedTypes = ref<string[]>([]);
 const search = computed(() => pokedexStore.search);
 const pokemons = computed(() => pokedexStore.pokemons);
 const isLoading = computed(() => pokedexStore.isLoading);
 const isError = computed(() => pokedexStore.isError);
 const searchResults = computed(() => pokedexStore.searchResults);
 
-const handleSearch = () => {
-  pokedexStore.handleSearch();
+const updateTypeFilter = (event: Event) => {
+  const target = event.target as HTMLInputElement | null;
+  if (target && target.value) {
+    if (target.checked) {
+      selectedTypes.value.push(target.value);
+    } else {
+      selectedTypes.value = selectedTypes.value.filter(
+        (type) => type !== target.value
+      );
+    }
+    pokedexStore.setSelectedTypes(selectedTypes.value);
+  }
 };
 
-const redirectToHome = () => {
-  pokedexStore.resetSearchAndReload();
-  router.push("/");
+const handleSearch = () => {
+  pokedexStore.handleSearch();
 };
 
 const setSearch = (event: Event) => {
@@ -54,7 +83,7 @@ onMounted(() => {
         <router-link
           to="/"
           class="header_pokedex_title"
-          @click="redirectToHome"
+          @click="pokedexStore.resetSearchAndReload"
         >
           Pokédex
         </router-link>
@@ -84,9 +113,29 @@ onMounted(() => {
       </div>
     </header>
 
+    <div class="filter_section">
+      <h3>Filter by Types:</h3>
+      <div class="types_filters">
+        <div
+          v-for="type in types"
+          :key="type"
+          class="filter_option"
+        >
+          <label>
+            <input
+              type="checkbox"
+              :value="type"
+              @change="updateTypeFilter"
+            />
+            {{ type }}
+          </label>
+        </div>
+      </div>
+    </div>
+
     <section class="section_pokedex">
       <div v-if="isLoading">Loading...</div>
-      <div v-if="isError">An error has occurred: Pokemon not found</div>
+      <div v-if="isError">An error has occurred: Pokémon not found</div>
 
       <ul
         class="grid_pokedex"
