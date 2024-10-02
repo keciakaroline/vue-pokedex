@@ -2,19 +2,15 @@ import { defineStore } from "pinia";
 import { getPokemons, getPokemonByName } from "@/services/pokemonApiService";
 import { INITIAL_PAGE } from "@/shared/helpers";
 import type { PokedexState } from "@/services/types";
-import { useRouter } from "vue-router";
 
 export const usePokedexStore = defineStore("pokedex", {
   state: (): PokedexState => ({
     search: "",
-    searchMode: "name",
     currentPage: INITIAL_PAGE,
-    filter: [],
     pokemons: [],
     isLoading: false,
     isError: false,
     error: null,
-    isSearching: false,
     searchResults: [],
   }),
 
@@ -56,22 +52,25 @@ export const usePokedexStore = defineStore("pokedex", {
     },
 
     async handleSearch() {
-      const trimmedSearch = this.search.trim();
+      const trimmedSearch = this.search.trim().toLowerCase();
       if (!trimmedSearch) {
-        this.redirectToHome();
+        this.resetSearchAndReload();
         return;
       }
 
-      this.isSearching = true;
+      this.isLoading = true;
       this.isError = false;
       this.error = null;
 
       try {
-        if (this.searchMode === "id") {
-          const { data } = await getPokemonByName(this.search);
-          this.searchResults = [data];
-        } else if (this.searchMode === "name") {
-          const { data } = await getPokemonByName(this.search.toLowerCase());
+        const filteredPokemons = this.pokemons.filter((pokemon) =>
+          pokemon.name.toLowerCase().includes(trimmedSearch)
+        );
+
+        if (filteredPokemons.length > 0) {
+          this.searchResults = filteredPokemons;
+        } else {
+          const { data } = await getPokemonByName(trimmedSearch);
           this.searchResults = [data];
         }
       } catch (error: any) {
@@ -79,27 +78,16 @@ export const usePokedexStore = defineStore("pokedex", {
         this.error = error.message || "Erro ao buscar o Pokémon.";
         this.searchResults = [];
       } finally {
-        this.isSearching = false;
+        this.isLoading = false;
       }
-    },
-
-    setSearchMode() {
-      this.searchMode = this.searchMode === "name" ? "id" : "name";
     },
 
     setSearch(value: string) {
       this.search = value;
     },
 
-    redirectToHome() {
-      const router = useRouter();
-      this.resetSearchAndReload();
-      router.push("/");
-    },
-
     resetSearchAndReload() {
       this.search = "";
-      this.filter = [];
       this.searchResults = [];
       this.currentPage = INITIAL_PAGE;
       this.fetchPokemons();
