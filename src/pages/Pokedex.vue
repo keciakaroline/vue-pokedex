@@ -45,11 +45,6 @@ const handleSearch = () => {
   pokedexStore.handleSearch();
 };
 
-const redirectToHome = () => {
-  pokedexStore.resetSearchAndReload();
-  router.push("/");
-};
-
 const setSearch = (event: Event) => {
   const target = event.target as HTMLInputElement | null;
   if (target && target.value) {
@@ -66,16 +61,9 @@ const handleTypeChange = () => {
   pokedexStore.setSelectedTypes(selectedTypes);
 };
 
-const handleNextPage = () => {
-  if (currentPage.value < totalPages.value) {
-    pokedexStore.handleNextPage();
-  }
-};
-
-const handlePreviousPage = () => {
-  if (currentPage.value > 1) {
-    pokedexStore.handlePreviousPage();
-  }
+const redirectToHome = () => {
+  pokedexStore.resetSearchAndReload();
+  router.push("/");
 };
 
 onMounted(() => {
@@ -186,8 +174,8 @@ onMounted(() => {
       <footer class="footer_pagination">
         <button
           class="btn_pagination_left"
-          @click="handlePreviousPage"
           :disabled="currentPage === 1"
+          @click="pokedexStore.updatePage('previous')"
         >
           <img
             :src="arrowBackBold"
@@ -196,8 +184,8 @@ onMounted(() => {
         </button>
         <button
           class="btn_pagination_right"
-          @click="handleNextPage"
           :disabled="currentPage >= totalPages"
+          @click="pokedexStore.updatePage('next')"
         >
           <img
             :src="arrowForwardBold"

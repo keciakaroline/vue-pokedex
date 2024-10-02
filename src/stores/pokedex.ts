@@ -46,18 +46,13 @@ export const usePokedexStore = defineStore("pokedex", {
       }
     },
 
-    handleNextPage() {
-      if (this.currentPage < this.totalPages) {
+    updatePage(direction: "next" | "previous") {
+      if (direction === "next" && this.currentPage < this.totalPages) {
         this.currentPage++;
-        this.fetchPokemons();
-      }
-    },
-
-    handlePreviousPage() {
-      if (this.currentPage > 1) {
+      } else if (direction === "previous" && this.currentPage > 1) {
         this.currentPage--;
-        this.fetchPokemons();
       }
+      this.fetchPokemons();
     },
 
     async handleSearch() {
