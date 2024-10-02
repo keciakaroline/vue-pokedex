@@ -3,38 +3,39 @@ import { computed, onMounted } from "vue";
 import { usePokedexStore } from "@/stores/pokedex";
 import pokeballImg from "@/assets/icons/pokeball.svg";
 import searchImg from "@/assets/icons/search.svg";
-import vectorId from "@/assets/icons/searchById.svg";
-import vectorName from "@/assets/icons/searchByName.svg";
 import arrowBackBold from "@/assets/icons/arrow_back_bold.svg";
 import arrowForwardBold from "@/assets/icons/arrow_forward_bold.svg";
 import PokemonCard from "../components/PokemonCard.vue";
+import { useRouter } from "vue-router";
 
 const pokedexStore = usePokedexStore();
+const router = useRouter();
 
 const search = computed(() => pokedexStore.search);
-const searchMode = computed(() => pokedexStore.searchMode);
 const pokemons = computed(() => pokedexStore.pokemons);
-const filter = computed(() => pokedexStore.filter);
 const isLoading = computed(() => pokedexStore.isLoading);
 const isError = computed(() => pokedexStore.isError);
-const error = computed(() => pokedexStore.error);
 const searchResults = computed(() => pokedexStore.searchResults);
 
 const handleSearch = () => {
   pokedexStore.handleSearch();
 };
 
-const setSearchMode = pokedexStore.setSearchMode;
+const redirectToHome = () => {
+  pokedexStore.resetSearchAndReload();
+  router.push("/");
+};
+
 const setSearch = (event: Event) => {
   const target = event.target as HTMLInputElement | null;
   if (target && target.value) {
     pokedexStore.setSearch(target.value);
+    handleSearch();
   }
 };
 
 const handleNextPage = pokedexStore.handleNextPage;
 const handlePreviousPage = pokedexStore.handlePreviousPage;
-const redirectToHome = pokedexStore.redirectToHome;
 
 onMounted(() => {
   pokedexStore.fetchPokemons();
@@ -50,7 +51,6 @@ onMounted(() => {
           alt="Pokeball"
           class="pokeballImg"
         />
-
         <router-link
           to="/"
           class="header_pokedex_title"
@@ -81,22 +81,12 @@ onMounted(() => {
             @keydown.enter="handleSearch"
           />
         </div>
-        <button
-          class="btn_search"
-          @click="setSearchMode"
-        >
-          <img
-            :src="searchMode === 'name' ? vectorName : vectorId"
-            alt="search by Id or Name icon"
-            class="searchByIdImg"
-          />
-        </button>
       </div>
     </header>
 
     <section class="section_pokedex">
       <div v-if="isLoading">Loading...</div>
-      <div v-if="isError">An error has occurred: {{ error }}</div>
+      <div v-if="isError">An error has occurred: Pokemon not found</div>
 
       <ul
         class="grid_pokedex"
@@ -116,7 +106,7 @@ onMounted(() => {
         v-if="!isLoading && !isError && searchResults.length === 0"
       >
         <PokemonCard
-          v-for="pokemon in filter.length !== 0 ? filter : pokemons"
+          v-for="pokemon in pokemons"
           :key="pokemon.id"
           :name="pokemon.name"
           :id="pokemon.id"
