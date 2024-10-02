@@ -17,6 +17,7 @@ interface Pokemon {
 
 interface PokemonResponse {
   results: Pokemon[];
+  count: number;
 }
 
 interface PokemonSpecie {
@@ -43,6 +44,8 @@ interface PokedexState {
   error: string | null;
   searchResults: Pokemon[];
   selectedTypes: string[];
+  typeFilterError: string;
+  totalPages: number;
 }
 
 export type {

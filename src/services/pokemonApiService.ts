@@ -2,12 +2,17 @@ import axiosClient from "./axiosClient";
 import { LIMIT } from "@/shared/helpers/index";
 import type { Pokemon, PokemonResponse } from "./types";
 
-export function getPokemons(page: number = 1): Promise<Pokemon[]> {
+export function getPokemons(
+  page: number = 1
+): Promise<{ results: Pokemon[]; count: number }> {
   const offset = (page - 1) * LIMIT;
   return axiosClient
     .get<PokemonResponse>(`/pokemon?offset=${offset}&limit=${LIMIT}`)
     .then((response) => {
-      return response.data.results;
+      return {
+        results: response.data.results,
+        count: response.data.count,
+      };
     })
     .catch((error) => {
       throw error;
