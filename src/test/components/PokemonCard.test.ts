@@ -3,8 +3,8 @@ import { describe, it, expect } from "vitest";
 import PokemonCard from "@/components/PokemonCard.vue";
 import "@testing-library/jest-dom";
 
-describe("PokemonCard.vue", () => {
-  it("deve renderizar o nome, id formatado e imagem do Pokémon corretamente", () => {
+describe("PokemonCard", () => {
+  it("should render name, id and img", () => {
     const props = {
       name: "pikachu",
       id: 25,
