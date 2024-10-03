@@ -1,5 +1,47 @@
-# Vue 3 + TypeScript + Vite
+# Pokedex
 
-This template should help get you started developing with Vue 3 and TypeScript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+Este projeto é uma Pokédex construída utilizando Vue 3, TypeScript e Vite. A aplicação consome dados da [PokeAPI](https://pokeapi.co/) e exibe uma lista de Pokémon, seus detalhes, além de permitir buscas e filtragens.
 
-Learn more about the recommended Project Setup and IDE Support in the [Vue Docs TypeScript Guide](https://vuejs.org/guide/typescript/overview.html#project-setup).
+## Instruções de Instalação
+
+### 1. Clone o repositório
+
+```
+git clone https://github.com/keciakaroline/vue-pokedex.git
+cd vue-pokedex
+```
+
+### 2. Instale as dependências
+
+Antes de rodar o projeto, certifique-se de que você tem o Node.js instalado. Em seguida, instale as dependências necessárias com:
+
+```
+npm install
+```
+
+### 3. Execute a aplicação
+
+    Para rodar o projeto em modo de desenvolvimento, utilize o comando:
+
+```
+npm run dev
+```
+
+    Acesse a aplicação no navegador através de http://localhost:3000.
+
+### 4. Execute os testes
+
+Este projeto utiliza Vitest para os testes unitários. Para rodar os testes, execute:
+
+```
+npm run test
+```
+
+## Funcionalidades Implementadas
+
+- Listagem de Pokémon: Exibe uma lista de Pokémon com informações básicas como nome e ID.
+- Filtro por tipo: Permite filtrar os Pokémon por tipos (água, fogo, grama, etc.).
+- Busca por nome: Permite buscar Pokémon pelo nome.
+- Detalhes dos Pokémon: Clicando em um Pokémon, você é redirecionado para uma página de detalhes que exibe informações como altura, peso, habilidades, e mais.
+- Paginação: A lista de Pokémon é paginada, permitindo navegação entre as páginas.
+- Carregamento e tratamento de erros: Indicadores de carregamento e mensagens de erro são exibidos ao buscar dados da API.
