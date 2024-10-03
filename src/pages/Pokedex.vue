@@ -7,6 +7,7 @@ import arrowBackBold from "@/assets/icons/arrow_back_bold.svg";
 import arrowForwardBold from "@/assets/icons/arrow_forward_bold.svg";
 import PokemonCard from "../components/PokemonCard.vue";
 import { useRouter } from "vue-router";
+import { ref } from "vue";
 
 const types = [
   "fire",
@@ -31,25 +32,33 @@ const types = [
 
 const pokedexStore = usePokedexStore();
 const router = useRouter();
+const search = ref(pokedexStore.search);
 
-const search = computed(() => pokedexStore.search);
-const pokemons = computed(() => pokedexStore.pokemons);
 const currentPage = computed(() => pokedexStore.currentPage);
 const isLoading = computed(() => pokedexStore.isLoading);
 const isError = computed(() => pokedexStore.isError);
-const searchResults = computed(() => pokedexStore.searchResults);
-const typeFilterError = computed(() => pokedexStore.typeFilterError);
 const totalPages = computed(() => pokedexStore.totalPages);
+const selectedTypes = computed(() => pokedexStore.selectedTypes);
 
-const handleSearch = () => {
-  pokedexStore.handleSearch();
-};
+const filteredPokemons = computed(() => {
+  return pokedexStore.pokemons.filter((pokemon) => {
+    const matchesSearchName = pokemon.name
+      .toLowerCase()
+      .includes(search.value.toLowerCase());
+    const isFromFilteredTypes = selectedTypes.value.length
+      ? pokemon.types.some((type) =>
+          selectedTypes.value.includes(type.type.name)
+        )
+      : true;
+
+    return matchesSearchName && isFromFilteredTypes;
+  });
+});
 
 const setSearch = (event: Event) => {
   const target = event.target as HTMLInputElement | null;
   if (target && target.value) {
     pokedexStore.setSearch(target.value);
-    handleSearch();
   }
 };
 
@@ -62,8 +71,8 @@ const handleTypeChange = () => {
 };
 
 const redirectToHome = () => {
+  pokedexStore.currentPage = 1;
   pokedexStore.resetSearchAndReload();
-  router.push("/");
 };
 
 onMounted(() => {
@@ -90,10 +99,7 @@ onMounted(() => {
       </div>
       <div class="header_title header_searchBar">
         <div class="inputContainer">
-          <button
-            @click="handleSearch"
-            class="btn_searchImg"
-          >
+          <button class="btn_searchImg">
             <img
               :src="searchImg"
               alt="search icon"
@@ -107,7 +113,6 @@ onMounted(() => {
             class="searchInput"
             v-model="search"
             @input="setSearch"
-            @keydown.enter="handleSearch"
           />
         </div>
       </div>
@@ -136,34 +141,13 @@ onMounted(() => {
     <section class="section_pokedex">
       <div v-if="isLoading">Loading...</div>
       <div v-if="isError">An error has occurred: Pokémon not found</div>
-      <div v-if="typeFilterError">{{ typeFilterError }}</div>
 
       <ul
         class="grid_pokedex"
-        v-if="
-          !isLoading && !isError && searchResults.length > 0 && !typeFilterError
-        "
+        v-if="!isLoading && !isError"
       >
         <PokemonCard
-          v-for="pokemon in searchResults"
-          :key="pokemon.id"
-          :name="pokemon.name"
-          :id="pokemon.id"
-          :sprites="pokemon.sprites?.other['official-artwork']?.front_default"
-        />
-      </ul>
-
-      <ul
-        class="grid_pokedex"
-        v-if="
-          !isLoading &&
-          !isError &&
-          searchResults.length === 0 &&
-          !typeFilterError
-        "
-      >
-        <PokemonCard
-          v-for="pokemon in pokemons"
+          v-for="pokemon in filteredPokemons"
           :key="pokemon.id"
           :name="pokemon.name"
           :id="pokemon.id"
