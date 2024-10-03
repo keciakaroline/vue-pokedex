@@ -3,9 +3,9 @@
 Este projeto é uma Pokédex construída utilizando Vue 3, TypeScript e Vite. A aplicação consome dados da [PokeAPI](https://pokeapi.co/) e exibe uma lista de Pokémon, seus detalhes, além de permitir buscas e filtragens.
 
 ## Host na Vercel
-```
+
 https://vue-pokedex-eta.vercel.app/
-```
+
 
 ## Instruções de Instalação
 
