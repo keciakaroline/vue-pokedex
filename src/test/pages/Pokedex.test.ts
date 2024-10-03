@@ -45,8 +45,32 @@ describe("Pokedex", () => {
     const pokedexStore = usePokedexStore();
 
     pokedexStore.pokemons = [
-      { id: 1, name: "bulbasaur", types: [{ type: { name: "grass" } }] },
-      { id: 2, name: "charmander", types: [{ type: { name: "fire" } }] },
+      {
+        id: 1,
+        name: "bulbasaur",
+        types: [{ type: { name: "grass" } }],
+        sprites: {
+          other: {
+            "official-artwork": {
+              front_default:
+                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+            },
+          },
+        },
+      },
+      {
+        id: 2,
+        name: "charmander",
+        types: [{ type: { name: "fire" } }],
+        sprites: {
+          other: {
+            "official-artwork": {
+              front_default:
+                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/4.png",
+            },
+          },
+        },
+      },
     ];
 
     render(Pokedex, {
