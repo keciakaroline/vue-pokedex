@@ -10,7 +10,6 @@
     "test": "vitest --watch"
   },
   "dependencies": {
-    "@tanstack/vue-query": "^5.56.2",
     "@testing-library/vue": "^8.1.0",
     "axios": "^1.7.7",
     "pinia": "^2.2.2",
