@@ -42,9 +42,7 @@ interface PokedexState {
   isLoading: boolean;
   isError: boolean;
   error: string | null;
-  searchResults: Pokemon[];
   selectedTypes: string[];
-  typeFilterError: string;
   totalPages: number;
 }
 
