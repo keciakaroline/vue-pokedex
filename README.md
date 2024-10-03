@@ -21,13 +21,13 @@ npm install
 
 ### 3. Execute a aplicação
 
-    Para rodar o projeto em modo de desenvolvimento, utilize o comando:
+Para rodar o projeto em modo de desenvolvimento, utilize o comando:
 
 ```
 npm run dev
 ```
 
-    Acesse a aplicação no navegador através de http://localhost:3000.
+Acesse a aplicação no navegador através de http://localhost:3000.
 
 ### 4. Execute os testes
 
