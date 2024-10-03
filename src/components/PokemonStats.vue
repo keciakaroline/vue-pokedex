@@ -60,7 +60,6 @@ const generateUuid = () => crypto.randomUUID();
   align-items: center;
 }
 
-/* !! olhar esse de novo */
 .statsValor {
   padding: 0rem 0.25rem 0rem 0rem;
   margin: 0 auto;
