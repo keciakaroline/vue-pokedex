@@ -57,6 +57,13 @@ describe("Pokedex", () => {
             },
           },
         },
+        stats: [
+          { stat: { name: "hp" }, base_stat: 45 },
+          { stat: { name: "attack" }, base_stat: 49 },
+        ],
+        weight: 69,
+        height: 7,
+        abilities: [{ ability: { name: "overgrow" } }],
       },
       {
         id: 2,
@@ -70,6 +77,13 @@ describe("Pokedex", () => {
             },
           },
         },
+        stats: [
+          { stat: { name: "hp" }, base_stat: 39 },
+          { stat: { name: "attack" }, base_stat: 52 },
+        ],
+        weight: 85,
+        height: 6,
+        abilities: [{ ability: { name: "blaze" } }],
       },
     ];
 
@@ -104,6 +118,13 @@ describe("Pokedex", () => {
             },
           },
         },
+        stats: [
+          { stat: { name: "hp" }, base_stat: 45 },
+          { stat: { name: "attack" }, base_stat: 49 },
+        ],
+        weight: 69,
+        height: 7,
+        abilities: [{ ability: { name: "overgrow" } }],
       },
       {
         id: 2,
@@ -117,6 +138,13 @@ describe("Pokedex", () => {
             },
           },
         },
+        stats: [
+          { stat: { name: "hp" }, base_stat: 39 },
+          { stat: { name: "attack" }, base_stat: 52 },
+        ],
+        weight: 85,
+        height: 6,
+        abilities: [{ ability: { name: "blaze" } }],
       },
     ];
 
@@ -155,6 +183,13 @@ describe("Pokedex", () => {
             },
           },
         },
+        stats: [
+          { stat: { name: "hp" }, base_stat: 45 },
+          { stat: { name: "attack" }, base_stat: 49 },
+        ],
+        weight: 69,
+        height: 7,
+        abilities: [{ ability: { name: "overgrow" } }],
       },
     ];
 
