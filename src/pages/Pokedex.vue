@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted } from "vue";
+import { computed, onMounted, ref } from "vue";
 import { usePokedexStore } from "@/stores/pokedex";
 import pokeballImg from "@/assets/icons/pokeball.svg";
 import searchImg from "@/assets/icons/search.svg";
@@ -7,7 +7,6 @@ import arrowBackBold from "@/assets/icons/arrow_back_bold.svg";
 import arrowForwardBold from "@/assets/icons/arrow_forward_bold.svg";
 import PokemonCard from "../components/PokemonCard.vue";
 import { useRouter } from "vue-router";
-import { ref } from "vue";
 
 const types = [
   "fire",
